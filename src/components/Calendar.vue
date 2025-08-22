@@ -11,10 +11,6 @@ const props = defineProps({
 
 const emits = defineEmits(["change:date"]);
 
-const monthDays = computed(() => {
-  return getDaysMonth(state.year, state.month);
-});
-
 const parsedValue = computed(() => {
   return typeof props.value === "string" ? new Date(props.value) : props.value;
 });
@@ -23,6 +19,10 @@ const state = reactive({
   year: parsedValue.value.getFullYear(),
   month: parsedValue.value.getMonth(),
   day: parsedValue.value.getDate(),
+});
+
+const monthDays = computed(() => {
+  return getDaysMonth(state.year, state.month);
 });
 
 const changeMonth = (direction) => {
@@ -44,6 +44,14 @@ const changeMonth = (direction) => {
 const changeDate = (date) => {
   emits("change:date", new Date(date.year, date.month, date.day));
 };
+
+const isActiveDay = (date) => {
+  return (
+    date.day === parsedValue.value.getDate() &&
+    date.month === parsedValue.value.getMonth() &&
+    date.year === parsedValue.value.getFullYear()
+  );
+};
 </script>
 
 <template>
@@ -57,7 +65,7 @@ const changeDate = (date) => {
       </button>
 
       <div class="calendar__header-title">
-        <!-- В идеале селект использовать из библиотеки, но здесь я представил самый минималистичный самописный вариант -->
+        <!-- В идеале селект использовать из библиотеки, но здесь я представил самый упрощённый самописный вариант -->
         <select
           class="calendar__header-select"
           name="months"
@@ -100,10 +108,7 @@ const changeDate = (date) => {
         class="calendar__content-day"
         :class="{
           '--more-month': date.month !== state.month,
-          '--active':
-            date.day === parsedValue.getDate() &&
-            date.month === parsedValue.getMonth() &&
-            date.year === parsedValue.getFullYear(),
+          '--active': isActiveDay(date),
         }"
         :key="`${date.month}-${date.day}`"
         @click="changeDate(date)"
@@ -160,8 +165,8 @@ const changeDate = (date) => {
 
       cursor: pointer;
       border: none;
-      appearance: none;
       outline: none;
+      appearance: none;
 
       &:hover {
         color: #535353;

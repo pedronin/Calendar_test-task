@@ -1,11 +1,19 @@
+const getMaxDaysInMonth = (year, month) => {
+  return new Date(year, month, 0).getDate()
+}
+
+const getFirstWeekDayInMonth = (year, month) => {
+  return new Date(year, month, 1).getDay()
+}
+
 export default (year, month) => {
   const result = [];
-  
-  const firstWeekDayAtMonth = new Date(year, month, 1).getDay();
 
-  // если текщий месяц начинается не с воскресения, то пушим последние дни предидущего месяца
-  if (firstWeekDayAtMonth !== 0) {
-    const maxDaysInPrevMonth = new Date(year, month, 0).getDate();
+  const firstWeekDayInMonth = getFirstWeekDayInMonth(year, month);
+
+  // если текщий месяц начинается не с воскресения, то пушим последние дни предыдущего месяца
+  if (firstWeekDayInMonth !== 0) {
+    const maxDaysInPrevMonth = getMaxDaysInMonth(year, month);
     let localMonth = month - 1;
     let localYear = year;
 
@@ -14,17 +22,17 @@ export default (year, month) => {
       localYear -= 1;
     }
 
-    for (let i = 0; i < firstWeekDayAtMonth; i++) {
+    for (let i = 0; i < firstWeekDayInMonth; i++) {
       result.push({
-        day: maxDaysInPrevMonth - firstWeekDayAtMonth + i + 1,
+        day: maxDaysInPrevMonth - firstWeekDayInMonth + i + 1,
         month: localMonth,
         year: localYear,
       });
     }
   }
 
-  const maxDaysInCurrentMonth = new Date(year, month + 1, 0).getDate();
-  
+  const maxDaysInCurrentMonth = getMaxDaysInMonth(year, month + 1);
+
   for (let i = 0; i < maxDaysInCurrentMonth; i++) {
     result.push({
       day: i + 1,
